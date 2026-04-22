@@ -121,7 +121,7 @@ def get_completion(messages):
         res = requests.post(
             "https://openrouter.ai/api/v1/chat/completions",
             headers={"Authorization": f"Bearer {API_KEY}"},
-            json={"model": "meta-llama/llama-3-8b-instruct", "messages": messages, "max_tokens": 600}
+            json={"model": "google/gemini-flash-1.5", "messages": messages, "max_tokens": 600}
         )
         return res.json()['choices'][0]['message']['content']
     except Exception as e:
