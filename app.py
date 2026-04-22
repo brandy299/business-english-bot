@@ -75,7 +75,7 @@ st.markdown("""
         width: 100%;
     }
 
-    /* Chat CSS (Moved to Global to avoid breaking Markdown) */
+    /* Chat CSS */
     .chat-master-container {
         background-color: #ffffff !important;
         border: 2px solid #d1ccc1;
@@ -130,25 +130,10 @@ def render_chat_html(messages):
         ava_icon = "💼" if is_bot else "🎓"
         lbl = "Partner" if is_bot else "You"
         
-        inner_html += f"""
-        <div class="message-row {row_cls}">
-            <div class="avatar {ava_cls}">{ava_icon}</div>
-            <div style="display: flex; flex-direction: column;">
-                <div class="meta">{lbl}</div>
-                <div class="bubble {bub_cls}">{msg['content']}</div>
-            </div>
-        </div>
-        """
+        inner_html += f'<div class="message-row {row_cls}"><div class="avatar {ava_cls}">{ava_icon}</div><div style="display: flex; flex-direction: column;"><div class="meta">{lbl}</div><div class="bubble {bub_cls}">{msg["content"]}</div></div></div>'
     
-    full_html = f"""
-    <div class="chat-master-container" id="chat-box">
-        {inner_html}
-    </div>
-    <script>
-        var b = document.getElementById("chat-box");
-        if (b) {{ b.scrollTop = b.scrollHeight; }}
-    </script>
-    """
+    # NO LEADING WHITESPACE HERE TO AVOID MARKDOWN CODE BLOCKS
+    full_html = f'<div class="chat-master-container" id="chat-box">{inner_html}</div><script>var b=document.getElementById("chat-box");if(b){{b.scrollTop=b.scrollHeight;}}</script>'
     return full_html
 
 # --- SIDEBAR ---
@@ -186,10 +171,8 @@ with col_right:
         st.session_state.messages = [{"role": "system", "content": current['system_prompt']}, {"role": "assistant", "content": current['start_msg']}]
         st.session_state.last_scenario = selected_scenario_name
 
-    # Outer Container with Label
     st.markdown('<div style="background:#7c2d12; color:white; padding:8px 15px; font-size:0.8rem; font-weight:bold; letter-spacing:1px; border-radius: 8px 8px 0 0;">ACTIVE CONNECTION</div>', unsafe_allow_html=True)
     
-    # Render Chat
     st.markdown(render_chat_html(st.session_state.messages), unsafe_allow_html=True)
 
     if prompt := st.chat_input("Speak now..."):
