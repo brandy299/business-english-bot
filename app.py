@@ -4,160 +4,173 @@ from scenarios import SCENARIOS
 
 # --- CONFIGURATION ---
 st.set_page_config(
-    page_title="Business English Trainer | Pro", 
-    page_icon="🎓", 
+    page_title="Business English | Editorial", 
+    page_icon="✒️", 
     layout="wide"
 )
 
-# --- IMPECCABLE DARK ACADEMIC DESIGN ---
+# --- EDITORIAL NOIR DESIGN (BEYOND GENERIC) ---
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap');
 
-    /* Global Reset */
+    /* Atmospheric Background with Gradient Mesh & Noise */
     .stApp {
-        background-color: #020617; /* Deepest Navy */
+        background: 
+            radial-gradient(circle at 10% 20%, rgba(30, 41, 59, 0.4) 0%, transparent 40%),
+            radial-gradient(circle at 90% 80%, rgba(15, 23, 42, 0.4) 0%, transparent 40%),
+            linear-gradient(135deg, #020617 0%, #0f172a 100%);
+        background-attachment: fixed;
         color: #f1f5f9;
         font-family: 'Inter', sans-serif;
     }
 
-    /* Main Title Section */
-    .title-container {
-        padding: 40px 0;
-        text-align: center;
-        background: linear-gradient(180deg, rgba(30, 58, 138, 0.2) 0%, rgba(2, 6, 23, 0) 100%);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        margin-bottom: 40px;
-    }
-    
-    .main-title {
-        font-family: 'Playfair Display', serif;
-        font-size: 3.5rem;
-        background: linear-gradient(to right, #ffffff, #94a3b8);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 10px;
+    /* Noise Texture Overlay */
+    .stApp::before {
+        content: "";
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background-image: url('https://grainy-gradients.vercel.app/noise.svg');
+        opacity: 0.05;
+        pointer-events: none;
+        z-index: 0;
     }
 
-    /* Assignment Card - Dark Paper Style */
-    .assignment-card {
-        background: rgba(30, 41, 59, 0.5);
-        backdrop-filter: blur(10px);
-        padding: 30px;
-        border-radius: 16px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    /* Editorial Header */
+    .editorial-header {
+        padding: 60px 0;
+        text-align: left;
+        max-width: 1200px;
+        margin: 0 auto;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    .section-label {
-        color: #38bdf8; /* Electric Blue Accent */
+    .editorial-title {
+        font-family: 'Bodoni Moda', serif;
+        font-size: 5rem;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        line-height: 0.9;
+        margin-bottom: 20px;
+        color: #ffffff;
+    }
+
+    .editorial-meta {
         text-transform: uppercase;
-        letter-spacing: 0.1em;
-        font-size: 0.75rem;
+        letter-spacing: 0.3em;
+        font-size: 0.8rem;
+        color: #64748b;
         font-weight: 600;
-        margin-bottom: 15px;
+    }
+
+    /* Asymmetric Layout Cards */
+    .assignment-block {
+        background: rgba(255, 255, 255, 0.02);
+        backdrop-filter: blur(20px);
+        padding: 40px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-top: 4px solid #ffffff; /* Sharp Contrast */
+        margin-top: -30px; /* Grid Breaking */
+        box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+    }
+
+    .brief-label {
+        font-family: 'Bodoni Moda', serif;
+        font-style: italic;
+        font-size: 1.5rem;
+        color: #94a3b8;
+        margin-bottom: 20px;
         display: block;
     }
 
-    .brief-text {
-        font-family: 'Georgia', serif;
-        font-size: 1.25rem;
-        line-height: 1.8;
+    .brief-content {
+        font-family: 'Bodoni Moda', serif;
+        font-size: 1.4rem;
+        line-height: 1.6;
         color: #e2e8f0;
     }
 
-    /* Glassmorphism Chat Container */
-    .chat-interface {
-        background: rgba(15, 23, 42, 0.8);
-        border: 1px solid rgba(56, 189, 248, 0.2);
-        border-radius: 24px;
-        padding: 20px;
-        box-shadow: 0 0 40px rgba(0,0,0,0.5), inset 0 0 20px rgba(56, 189, 248, 0.05);
-    }
-
-    /* Custom Message Bubbles */
-    .message-row {
-        margin-bottom: 24px;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .assistant-bubble {
-        background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-        color: white;
-        padding: 18px 22px;
-        border-radius: 20px 20px 20px 4px;
-        max-width: 85%;
-        align-self: flex-start;
+    /* Floating Chat Interface */
+    .chat-card {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 0; /* Brutalist sharp edges */
         border: 1px solid rgba(255, 255, 255, 0.1);
-        font-size: 1.05rem;
-        line-height: 1.6;
+        padding: 20px;
+        box-shadow: 0 40px 100px rgba(0,0,0,0.6);
     }
 
-    .user-bubble {
-        background: rgba(51, 65, 85, 0.5);
-        color: #f1f5f9;
-        padding: 18px 22px;
-        border-radius: 20px 20px 4px 20px;
-        max-width: 85%;
-        align-self: flex-end;
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        font-size: 1.05rem;
-        line-height: 1.6;
+    /* Distinctive Message Bubbles */
+    .msg-wrapper {
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
     }
 
-    .bubble-meta {
+    .msg-role {
         font-size: 0.7rem;
         text-transform: uppercase;
+        letter-spacing: 0.2em;
         color: #64748b;
-        margin-bottom: 6px;
-        font-weight: 600;
+        margin-bottom: 10px;
     }
 
-    /* Vocabulary Tags */
-    .tag {
-        display: inline-block;
-        background: rgba(56, 189, 248, 0.1);
-        color: #38bdf8;
-        padding: 6px 14px;
-        border-radius: 30px;
-        margin: 4px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        border: 1px solid rgba(56, 189, 248, 0.2);
+    .msg-text-bot {
+        font-size: 1.2rem;
+        color: #ffffff;
+        line-height: 1.6;
     }
 
-    /* Sidebar Styling */
+    .msg-text-user {
+        font-size: 1.2rem;
+        color: #94a3b8;
+        font-style: italic;
+    }
+
+    /* Vocabulary Masterpiece */
+    .vocab-strip {
+        display: flex;
+        gap: 15px;
+        overflow-x: auto;
+        padding: 10px 0;
+        margin-top: 20px;
+    }
+
+    .vocab-tag {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        padding: 5px 15px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+        white-space: nowrap;
+    }
+
+    /* Sidebar Reset */
     section[data-testid="stSidebar"] {
         background-color: #020617 !important;
-        border-right: 1px solid rgba(255, 255, 255, 0.05);
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    /* Buttons */
+    /* Primary Button - Pure Luxury */
     .stButton>button {
-        background: #38bdf8 !important;
-        color: #020617 !important;
-        border: none !important;
-        border-radius: 12px !important;
-        font-weight: 700 !important;
-        padding: 12px 24px !important;
-        transition: 0.3s all ease;
-    }
-    
-    .stButton>button:hover {
-        background: #7dd3fc !important;
-        box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
-        transform: translateY(-2px);
+        background: transparent !important;
+        color: white !important;
+        border: 1px solid white !important;
+        border-radius: 0 !important;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        padding: 15px 30px !important;
+        transition: 0.4s;
     }
 
-    /* Scrollbar */
-    ::-webkit-scrollbar {
-        width: 8px;
+    .stButton>button:hover {
+        background: white !important;
+        color: black !important;
+        box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
     }
-    ::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-    }
+
+    /* Hide Streamlit elements */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
@@ -168,21 +181,20 @@ def get_completion(messages):
         res = requests.post(
             "https://openrouter.ai/api/v1/chat/completions",
             headers={"Authorization": f"Bearer {API_KEY}"},
-            json={"model": "meta-llama/llama-3-8b-instruct", "messages": messages, "max_tokens": 400}
+            json={"model": "meta-llama/llama-3-8b-instruct", "messages": messages, "max_tokens": 500}
         )
         return res.json()['choices'][0]['message']['content']
     except Exception as e:
-        return f"Error: {str(e)}"
+        return f"System Error: {str(e)}"
 
 # --- SIDEBAR ---
 with st.sidebar:
-    st.markdown("<br><h2 style='color: white;'>TeacherHub</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='font-family: Bodoni Moda; color: white;'>The Coach.</h2>", unsafe_allow_html=True)
     st.markdown("---")
-    selected_scenario_name = st.selectbox("Curriculum Module", list(SCENARIOS.keys()))
+    selected_scenario_name = st.selectbox("Current Selection", list(SCENARIOS.keys()))
     current = SCENARIOS[selected_scenario_name]
     
-    st.markdown("<br>", unsafe_allow_html=True)
-    if st.button("RESET SIMULATION", use_container_width=True):
+    if st.button("New Protocol", use_container_width=True):
         st.session_state.messages = [
             {"role": "system", "content": current['system_prompt']},
             {"role": "assistant", "content": current['start_msg']}
@@ -191,22 +203,22 @@ with st.sidebar:
 
 # --- MAIN UI ---
 st.markdown("""
-    <div class='title-container'>
-        <div class='main-title'>Business English Pro</div>
-        <p style='color: #64748b; letter-spacing: 0.2em; font-size: 0.9rem;'>KAUFMÄNNISCHES BERUFSKOLLEG NRW</p>
+    <div class='editorial-header'>
+        <div class='editorial-meta'>Educational Protocol // Issue 01</div>
+        <div class='editorial-title'>Professional<br>Communication.</div>
     </div>
 """, unsafe_allow_html=True)
 
-col_left, col_right = st.columns([1, 1.4], gap="large")
+col_left, col_right = st.columns([1, 1.2], gap="large")
 
 with col_left:
     st.markdown(f"""
-    <div class="assignment-card">
-        <span class="section-label">Mission Briefing</span>
-        <div class="brief-text">{current["task"]}</div>
-        <br>
-        <span class="section-label">Required Terminology</span>
-        <div>{" ".join([f'<span class="tag">{w}</span>' for w in current['vocab']])}</div>
+    <div class="assignment-block">
+        <span class="brief-label">The Assignment.</span>
+        <div class="brief-content">{current["task"]}</div>
+        <div class="vocab-strip">
+            {" ".join([f'<span class="vocab-tag">{w}</span>' for w in current['vocab']])}
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -220,44 +232,43 @@ with col_right:
         st.session_state.last_scenario = selected_scenario_name
 
     # CUSTOM CHAT BOX
-    st.markdown('<div class="chat-interface">', unsafe_allow_html=True)
-    chat_box = st.container(height=550, border=False)
+    st.markdown('<div class="chat-card">', unsafe_allow_html=True)
+    chat_box = st.container(height=500, border=False)
     with chat_box:
         for msg in st.session_state.messages[1:]:
             is_bot = msg["role"] == "assistant"
-            cls = "assistant-bubble" if is_bot else "user-bubble"
-            lbl = "BUSINESS PARTNER" if is_bot else "STUDENT"
-            align = "flex-start" if is_bot else "flex-end"
+            role_text = "Business Partner" if is_bot else "Student / Response"
+            txt_class = "msg-text-bot" if is_bot else "msg-text-user"
             
             st.markdown(f"""
-            <div class="message-row" style="align-items: {align};">
-                <div class="bubble-meta">{lbl}</div>
-                <div class="{cls}">{msg['content']}</div>
+            <div class="msg-wrapper">
+                <div class="msg-role">{role_text}</div>
+                <div class="{txt_class}">{msg['content']}</div>
             </div>
             """, unsafe_allow_html=True)
 
     # INPUT
-    if prompt := st.chat_input("Enter your message..."):
+    if prompt := st.chat_input("Compose..."):
         st.session_state.messages.append({"role": "user", "content": prompt})
         with chat_box:
-            st.markdown(f'<div class="message-row" style="align-items: flex-end;"><div class="bubble-meta">STUDENT</div><div class="user-bubble">{prompt}</div></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="msg-wrapper"><div class="msg-role">Student / Response</div><div class="msg-text-user">{prompt}</div></div>', unsafe_allow_html=True)
             
-            with st.spinner("Processing protocol..."):
+            with st.spinner("Analyzing..."):
                 response = get_completion(st.session_state.messages)
-                st.markdown(f'<div class="message-row" style="align-items: flex-start;"><div class="bubble-meta">BUSINESS PARTNER</div><div class="assistant-bubble">{response}</div></div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="msg-wrapper"><div class="msg-role">Business Partner</div><div class="msg-text-bot">{response}</div></div>', unsafe_allow_html=True)
                 st.session_state.messages.append({"role": "assistant", "content": response})
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- FEEDBACK ---
+# --- ANALYTICS ---
 st.markdown("<br><br>", unsafe_allow_html=True)
-if st.button("📊 GENERATE ANALYTICS REPORT", use_container_width=True):
+if st.button("Generate Performance Analytics", use_container_width=True):
     student_msgs = [m['content'] for m in st.session_state.messages if m['role'] == 'user']
     if student_msgs:
-        with st.spinner("Compiling academic data..."):
-            feedback = get_completion([{"role": "user", "content": f"Analysiere diesen kaufmännischen Chat auf Deutsch (Stärken, Vokabeln {current['vocab']}, 3 Korrekturen): {student_msgs}"}])
+        with st.spinner("Compiling..."):
+            feedback = get_completion([{"role": "user", "content": f"Analysiere diesen Chat auf Deutsch (Stärken, Vokabeln {current['vocab']}, 3 Korrekturen): {student_msgs}"}])
             st.markdown(f"""
-                <div style="background: rgba(30, 41, 59, 0.8); border: 1px solid #38bdf8; padding: 30px; border-radius: 16px; margin-top: 20px;">
-                    <h3 style="color: #38bdf8; margin-top: 0;">Performance Report</h3>
-                    <div style="color: #e2e8f0; line-height: 1.6;">{feedback}</div>
+                <div style="background: white; color: black; padding: 50px; margin-top: 40px; box-shadow: 0 50px 100px rgba(0,0,0,0.5);">
+                    <h2 style="font-family: Bodoni Moda; border-bottom: 2px solid black; padding-bottom: 20px;">Review Report.</h2>
+                    <div style="font-size: 1.2rem; line-height: 1.7;">{feedback}</div>
                 </div>
             """, unsafe_allow_html=True)
