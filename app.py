@@ -2,83 +2,118 @@ import streamlit as st
 import requests
 from scenarios import SCENARIOS
 
-# --- CONFIGURATION & DESIGN ---
+# --- CONFIGURATION ---
 st.set_page_config(
-    page_title="Business English Bot - CYBERPUNK", 
-    page_icon="🤖", 
+    page_title="Business English Trainer", 
+    page_icon="🎓", 
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for "Lovable" Cyberpunk Aesthetic
+# --- PROFESSIONAL ACADEMIC DESIGN (IMPECCABLE) ---
 st.markdown("""
 <style>
-    /* Main Background with a subtle gradient */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+    /* Global Styles */
     .stApp {
-        background: radial-gradient(circle at top, #1a1a2e 0%, #0a0a0c 100%);
-        color: #e0e0e0;
+        background-color: #f8fafc;
+        color: #1e293b;
+        font-family: 'Inter', sans-serif;
     }
-    
-    /* Extreme Neon Header */
+
+    /* Main Header */
     h1 {
-        color: #00f2ff !important;
-        text-shadow: 0 0 20px #00f2ff, 0 0 40px #7000ff;
-        font-family: 'Segoe UI', sans-serif;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        text-align: center;
-        padding: 20px;
-        border: 2px solid #00f2ff;
-        border-radius: 15px;
-        box-shadow: inset 0 0 15px rgba(0, 242, 255, 0.2), 0 0 15px rgba(0, 242, 255, 0.2);
-    }
-
-    /* Georgia Font for Academic Content */
-    .academic-text {
         font-family: 'Georgia', serif;
-        font-size: 1.2rem;
-        line-height: 1.6;
-        color: #ffffff;
-        background: rgba(0, 242, 255, 0.05);
-        padding: 25px;
-        border-radius: 10px;
-        border-left: 5px solid #7000ff;
-        box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
+        color: #0f172a;
+        font-weight: 700;
+        font-size: 2.5rem !important;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 1rem;
+        margin-bottom: 2rem !important;
     }
 
-    /* Sidebar Styling */
+    h2, h3 {
+        color: #334155;
+        font-weight: 600;
+    }
+
+    /* Academic Instruction Card */
+    .instruction-card {
+        background-color: #ffffff;
+        padding: 2rem;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+
+    .instruction-header {
+        font-family: 'Georgia', serif;
+        font-size: 1.4rem;
+        color: #1e40af;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid #f1f5f9;
+        padding-bottom: 0.5rem;
+    }
+
+    .instruction-body {
+        font-family: 'Georgia', serif;
+        font-size: 1.15rem;
+        line-height: 1.7;
+        color: #334155;
+    }
+
+    /* Vocabulary Tags */
+    .vocab-tag {
+        display: inline-block;
+        background-color: #eff6ff;
+        color: #1e40af;
+        padding: 0.2rem 0.6rem;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+        border: 1px solid #dbeafe;
+    }
+
+    /* Sidebar Refinement */
     section[data-testid="stSidebar"] {
-        background-color: #050505 !important;
-        border-right: 2px solid #7000ff;
+        background-color: #ffffff !important;
+        border-right: 1px solid #e2e8f0;
     }
 
-    /* Chat Bubbles Modernized */
+    /* Chat Styling */
     [data-testid="stChatMessage"] {
-        background: rgba(255, 255, 255, 0.05) !important;
-        border: 1px solid rgba(112, 0, 255, 0.3) !important;
-        border-radius: 20px !important;
-        padding: 15px !important;
-        margin-bottom: 15px !important;
-        transition: 0.3s;
-    }
-    [data-testid="stChatMessage"]:hover {
-        border-color: #00f2ff !important;
-        box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+        background-color: #ffffff !important;
+        border: 1px solid #f1f5f9 !important;
+        border-radius: 12px !important;
+        padding: 1rem !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
     }
 
-    /* Buttons with Glow */
+    /* Buttons */
     .stButton>button {
-        background: linear-gradient(45deg, #00f2ff, #7000ff) !important;
+        background-color: #1e40af !important;
         color: white !important;
+        border-radius: 6px !important;
         border: none !important;
-        border-radius: 8px !important;
-        font-weight: bold !important;
-        padding: 10px 25px !important;
-        text-transform: uppercase;
+        padding: 0.5rem 1.5rem !important;
+        font-weight: 600 !important;
+        transition: all 0.2s ease;
     }
     .stButton>button:hover {
-        box-shadow: 0 0 25px #00f2ff !important;
-        transform: translateY(-2px);
+        background-color: #1e3a8a !important;
+        box-shadow: 0 4px 12px rgba(30, 64, 175, 0.2) !important;
+    }
+
+    /* Feedback Area */
+    .feedback-section {
+        background-color: #f1f5f9;
+        padding: 1.5rem;
+        border-radius: 8px;
+        border-left: 4px solid #1e40af;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -90,7 +125,7 @@ def get_completion(messages, model="meta-llama/llama-3-8b-instruct"):
         res = requests.post(
             "https://openrouter.ai/api/v1/chat/completions",
             headers={"Authorization": f"Bearer {API_KEY}"},
-            json={"model": model, "messages": messages, "max_tokens": 150}
+            json={"model": model, "messages": messages, "max_tokens": 250}
         )
         return res.json()['choices'][0]['message']['content']
     except Exception as e:
@@ -98,77 +133,87 @@ def get_completion(messages, model="meta-llama/llama-3-8b-instruct"):
 
 # --- SIDEBAR ---
 with st.sidebar:
-    st.title("⚡ English Coach")
+    st.image("https://img.icons8.com/fluency/96/graduation-cap.png", width=80)
+    st.title("TeacherHub")
+    st.markdown("*Business English Division*")
     st.markdown("---")
-    selected_scenario_name = st.selectbox("CHOOSE YOUR MISSION:", list(SCENARIOS.keys()))
+    
+    selected_scenario_name = st.selectbox("Current Unit:", list(SCENARIOS.keys()))
     current = SCENARIOS[selected_scenario_name]
     
-    st.markdown("### ⚡ SYSTEM TOOLS")
-    if st.button("RESET SIMULATION"):
+    st.markdown("### ⚙️ Settings")
+    if st.button("Reset Session"):
         st.session_state.messages = [
-            {"role": "system", "content": f"{current['system_prompt']} Keep answers short and professional."},
+            {"role": "system", "content": f"{current['system_prompt']} Keep answers professional and educational."},
             {"role": "assistant", "content": current['start_msg']}
         ]
         st.rerun()
 
 # --- MAIN UI ---
-st.title("🚀 Business English Telephoning Trainer")
+st.title("Telephoning Practice Environment")
 
-col1, col2 = st.columns([1, 2])
+col1, col2 = st.columns([1, 1.5])
 
 with col1:
-    st.markdown("### 📋 MISSION BRIEFING")
-    st.markdown(f'<div class="academic-text">{current["task"]}</div>', unsafe_allow_html=True)
+    # Instruction Card
+    st.markdown(f"""
+    <div class="instruction-card">
+        <div class="instruction-header">Assignment Briefing</div>
+        <div class="instruction-body">{current["task"]}</div>
+    </div>
+    """, unsafe_allow_html=True)
     
-    st.markdown("### 💾 KEY VOCABULARY")
-    for word in current['vocab']:
-        st.markdown(f"🔹 **{word}**")
+    # Vocabulary Section
+    st.markdown("### 📘 Key Terminology")
+    vocab_html = "".join([f'<span class="vocab-tag">{word}</span>' for word in current['vocab']])
+    st.markdown(vocab_html, unsafe_allow_html=True)
 
 with col2:
     # --- CHAT INITIALIZATION ---
     if "messages" not in st.session_state or st.session_state.get('last_scenario') != selected_scenario_name:
         st.session_state.messages = [
-            {"role": "system", "content": f"{current['system_prompt']} Keep answers short and professional."},
+            {"role": "system", "content": f"{current['system_prompt']} Keep answers professional and educational."},
             {"role": "assistant", "content": current['start_msg']}
         ]
         st.session_state.last_scenario = selected_scenario_name
 
-    # --- CHAT DISPLAY ---
-    chat_container = st.container(height=500)
+    # --- CHAT INTERFACE ---
+    chat_container = st.container(height=550)
     with chat_container:
         for msg in st.session_state.messages[1:]:
             with st.chat_message(msg["role"]):
                 st.write(msg["content"])
 
-    # --- USER INPUT ---
-    if prompt := st.chat_input("Input command..."):
+    # --- INPUT ---
+    if prompt := st.chat_input("Compose your response..."):
         st.session_state.messages.append({"role": "user", "content": prompt})
         with chat_container:
             with st.chat_message("user"):
                 st.write(prompt)
             
             with st.chat_message("assistant"):
-                with st.spinner("PROCESSING DATA..."):
+                with st.spinner("Analyzing and responding..."):
                     response = get_completion(st.session_state.messages)
                     st.write(response)
                     st.session_state.messages.append({"role": "assistant", "content": response})
 
-# --- FEEDBACK SECTION ---
+# --- FEEDBACK ---
 st.markdown("---")
-if st.button("📊 GENERATE PERFORMANCE REPORT"):
+if st.button("📝 Generate Academic Feedback"):
     student_msgs = [m['content'] for m in st.session_state.messages if m['role'] == 'user']
     if not student_msgs:
-        st.warning("Please start the conversation first!")
+        st.warning("Please engage in the conversation first to receive feedback.")
     else:
-        with st.spinner("ANALYZING PROTOCOLS..."):
+        with st.spinner("Reviewing conversation protocols..."):
             analysis_prompt = f"""
-            Analysiere als Englischlehrer diesen Chat-Verlauf eines Schülers (User).
-            Schreibe auf DEUTSCH. Nutze Markdown für die Struktur.
-            1. **Höflichkeit**: Wurden formelle Phrasen genutzt?
-            2. **Vokabeln**: Wurden diese Wörter korrekt genutzt: {current['vocab']}?
-            3. **Verbesserung**: 3 konkrete englische Sätze, wie der Schüler es besser hätte sagen können.
-            Verlauf: {student_msgs}
+            Analysiere diesen Chat-Verlauf als Englischlehrer. 
+            Zielgruppe: Kaufmännische Auszubildende (B1/B2).
+            Sprache: DEUTSCH.
+            Struktur:
+            1. Stärken (Was war gut?)
+            2. Vokabel-Check (Wurden {current['vocab']} genutzt?)
+            3. Korrekturen (3 konkrete Beispielsätze zur Verbesserung)
+            Chat-Verlauf: {student_msgs}
             """
             feedback = get_completion([{"role": "user", "content": analysis_prompt}])
-            st.success("### 📝 Performance Report")
-            st.markdown(feedback)
+            st.markdown(f'<div class="feedback-section"><h3>Educational Feedback</h3>{feedback}</div>', unsafe_allow_html=True)
