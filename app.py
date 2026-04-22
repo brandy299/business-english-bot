@@ -4,31 +4,29 @@ from scenarios import SCENARIOS
 
 # --- CONFIGURATION ---
 st.set_page_config(
-    page_title="Business English | Workbench", 
-    page_icon="🎓", 
+    page_title="Business Communication Lab", 
+    page_icon="📞", 
     layout="wide"
 )
 
-# --- ARCHITECTURAL CSS (THE FIX) ---
+# --- STYLING ---
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@700&family=Plus+Jakarta+Sans:wght@400;600&display=swap');
 
-    /* 1. Global Background Fix - Gekoppelt an .stApp */
     .stApp {
-        background-color: #e5dfd3 !important; /* Dunklerer Sandstein */
+        background-color: #ede7de !important;
         color: #2d2d2d;
         font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
-    /* 2. Header Area */
     .app-header {
         text-align: left;
-        padding: 20px 0 40px 0;
+        padding: 20px 0 30px 0;
     }
     .main-title {
         font-family: 'Crimson Pro', serif;
-        font-size: 3.5rem;
+        font-size: 3rem;
         color: #7c2d12;
         margin: 0;
     }
@@ -40,35 +38,38 @@ st.markdown("""
         text-transform: uppercase;
     }
 
-    /* 3. The Assignment Side (Paper style) */
     .assignment-container {
         background: #ffffff;
-        padding: 30px;
+        padding: 25px;
         border-radius: 4px;
         border: 1px solid #d1ccc1;
         box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         margin-bottom: 25px;
     }
 
-    /* 4. Vocabulary Masters */
-    .v-tag {
-        display: inline-block;
-        background: #fef2f2;
-        color: #9a3412;
-        padding: 5px 12px;
-        border-radius: 4px;
-        margin: 4px;
-        font-size: 0.85rem;
-        font-weight: bold;
-        border: 1px solid #fee2e2;
+    .vocab-container {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 15px;
     }
+    .v-row {
+        display: flex;
+        justify-content: space-between;
+        background: #fdf6e3;
+        padding: 8px 12px;
+        border-radius: 4px;
+        border: 1px solid #fee2e2;
+        font-size: 0.9rem;
+    }
+    .v-eng { font-weight: bold; color: #7c2d12; }
+    .v-ger { color: #475569; font-style: italic; }
 
-    /* 5. Custom Button Styling */
     .stButton>button {
         background-color: #7c2d12 !important;
         color: #ffffff !important;
         border: none !important;
-        padding: 12px 24px !important;
+        padding: 10px 20px !important;
         border-radius: 4px !important;
         font-weight: bold !important;
         width: 100%;
@@ -89,152 +90,105 @@ def get_completion(messages):
     except Exception as e:
         return f"Error: {str(e)}"
 
-# --- CHAT RENDERER (THE CORE FIX) ---
+# --- CHAT RENDERER ---
 def render_chat_html(messages):
     chat_html = """
     <style>
         .chat-master-container {
-            background-color: #ffffff !important; /* PURE WHITE */
+            background-color: #ffffff !important;
             border: 2px solid #d1ccc1;
-            border-radius: 12px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
             height: 550px;
             overflow-y: scroll;
-            padding: 25px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-        .chat-master-container::-webkit-scrollbar {
-            width: 8px;
-        }
-        .chat-master-container::-webkit-scrollbar-thumb {
-            background: #d1ccc1;
-            border-radius: 10px;
+            gap: 15px;
         }
         .bubble {
-            max-width: 80%;
-            padding: 15px 20px;
-            font-size: 1.05rem;
+            max-width: 85%;
+            padding: 12px 18px;
+            font-size: 1rem;
             line-height: 1.5;
-            position: relative;
         }
         .bubble-bot {
             align-self: flex-start;
             background-color: #fdf6e3;
-            border-left: 5px solid #7c2d12;
-            border-radius: 0 10px 10px 10px;
-            color: #1a1a1a;
+            border-left: 4px solid #7c2d12;
+            border-radius: 0 8px 8px 8px;
         }
         .bubble-user {
             align-self: flex-end;
             background-color: #f1f5f9;
-            border-right: 5px solid #475569;
-            border-radius: 10px 0 10px 10px;
-            color: #1a1a1a;
+            border-right: 4px solid #475569;
+            border-radius: 8px 0 8px 8px;
             text-align: right;
         }
-        .bubble-meta {
-            font-size: 0.7rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            color: #94a3b8;
-            margin-bottom: 5px;
-        }
+        .meta { font-size: 0.7rem; font-weight: bold; color: #94a3b8; margin-bottom: 3px; text-transform: uppercase; }
     </style>
     <div class="chat-master-container" id="chat-box">
     """
-    
     for msg in messages[1:]:
         is_bot = msg["role"] == "assistant"
         align = "flex-start" if is_bot else "flex-end"
         cls = "bubble-bot" if is_bot else "bubble-user"
-        lbl = "BUSINESS PARTNER" if is_bot else "YOU (STUDENT)"
-        
-        chat_html += f"""
-        <div style="display: flex; flex-direction: column; align-items: {align};">
-            <div class="bubble-meta">{lbl}</div>
-            <div class="bubble {cls}">{msg['content']}</div>
-        </div>
-        """
-    
-    chat_html += """
-    </div>
-    <script>
-        var chatBox = document.getElementById('chat-box');
-        chatBox.scrollTop = chatBox.scrollHeight;
-    </script>
-    """
+        lbl = "Partner" if is_bot else "You"
+        chat_html += f'<div style="display: flex; flex-direction: column; align-items: {align};"><div class="meta">{lbl}</div><div class="bubble {cls}">{msg["content"]}</div></div>'
+    chat_html += '</div><script>var b=document.getElementById("chat-box");b.scrollTop=b.scrollHeight;</script>'
     return chat_html
 
 # --- SIDEBAR ---
 with st.sidebar:
-    st.markdown("<h2 style='color: #7c2d12;'>TeacherHub</h2>", unsafe_allow_html=True)
-    st.markdown("---")
-    selected_scenario_name = st.selectbox("Current Unit", list(SCENARIOS.keys()))
+    st.markdown("<h2 style='color: #7c2d12; margin-top:0;'>Control Panel</h2>", unsafe_allow_html=True)
+    selected_scenario_name = st.selectbox("Select Scenario", list(SCENARIOS.keys()))
     current = SCENARIOS[selected_scenario_name]
-    
-    if st.button("RESTART MISSION", use_container_width=True):
-        st.session_state.messages = [
-            {"role": "system", "content": current['system_prompt']},
-            {"role": "assistant", "content": current['start_msg']}
-        ]
+    st.markdown("---")
+    if st.button("New Call", use_container_width=True):
+        st.session_state.messages = [{"role": "system", "content": current['system_prompt']}, {"role": "assistant", "content": current['start_msg']}]
         st.rerun()
 
 # --- MAIN PAGE ---
-st.markdown("""
-    <div class='app-header'>
-        <div class='sub-tag'>Kaufmännisches Berufskolleg NRW</div>
-        <h1 class='main-title'>English Telephoning Coach</h1>
-    </div>
-""", unsafe_allow_html=True)
+st.markdown(f"<div class='app-header'><div class='sub-tag'>Business English Training</div><h1 class='main-title'>Communication Lab</h1></div>", unsafe_allow_html=True)
 
-layout_left, layout_right = st.columns([1, 1.4], gap="large")
+col_left, col_right = st.columns([1, 1.4], gap="large")
 
-with layout_left:
+with col_left:
     st.markdown(f"""
     <div class="assignment-container">
-        <div class='sub-tag' style='margin-bottom:10px;'>Your Assignment</div>
-        <div style="font-family: Georgia, serif; font-size: 1.25rem; line-height: 1.6;">{current["task"]}</div>
+        <div class='sub-tag' style='margin-bottom:10px;'>Scenario Objectives</div>
+        <div style="font-family: Georgia, serif; font-size: 1.15rem; line-height: 1.6; white-space: pre-line;">{current["task"].strip()}</div>
     </div>
     """, unsafe_allow_html=True)
     
-    st.markdown("### Mastery Vocabulary")
-    v_html = "".join([f'<span class="v-tag">{w}</span>' for w in current['vocab']])
-    st.markdown(v_html, unsafe_allow_html=True)
+    st.markdown("### Vocabulary Bank")
+    vocab_html = '<div class="vocab-container">'
+    for eng, ger in current['vocab'].items():
+        vocab_html += f'<div class="v-row"><span class="v-eng">{eng}</span><span class="v-ger">{ger}</span></div>'
+    vocab_html += '</div>'
+    st.markdown(vocab_html, unsafe_allow_html=True)
 
-with layout_right:
-    # State Init
+with col_right:
     if "messages" not in st.session_state or st.session_state.get('last_scenario') != selected_scenario_name:
-        st.session_state.messages = [
-            {"role": "system", "content": current['system_prompt']},
-            {"role": "assistant", "content": current['start_msg']}
-        ]
+        st.session_state.messages = [{"role": "system", "content": current['system_prompt']}, {"role": "assistant", "content": current['start_msg']}]
         st.session_state.last_scenario = selected_scenario_name
 
-    # RENDER THE HARD-CONTRAST CHAT BLOCK
+    st.markdown('<div style="background:#ffffff; border:2px solid #d1ccc1; border-radius:8px; overflow:hidden;">', unsafe_allow_html=True)
+    st.markdown('<div style="background:#7c2d12; color:white; padding:8px 15px; font-size:0.8rem; font-weight:bold; letter-spacing:1px;">ACTIVE CONNECTION</div>', unsafe_allow_html=True)
     st.markdown(render_chat_html(st.session_state.messages), unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    # USER INPUT
-    if prompt := st.chat_input("Enter your response..."):
+    if prompt := st.chat_input("Speak now..."):
         st.session_state.messages.append({"role": "user", "content": prompt})
-        # Wir müssen neu laden, damit die UI den Bot-Spinner zeigt
-        with st.spinner("Analyzing protocol..."):
+        with st.spinner("Partner is typing..."):
             response = get_completion(st.session_state.messages)
             st.session_state.messages.append({"role": "assistant", "content": response})
         st.rerun()
 
-# --- EVALUATION ---
 st.markdown("<br>", unsafe_allow_html=True)
-if st.button("📊 GENERATE FINAL EVALUATION", use_container_width=True):
+if st.button("📊 ANALYZE CALL", use_container_width=True):
     student_msgs = [m['content'] for m in st.session_state.messages if m['role'] == 'user']
     if student_msgs:
-        with st.spinner("Reviewing dialogue protocols..."):
-            feedback = get_completion([{"role": "user", "content": f"Analysiere diesen Chat auf Deutsch (Feedback zu Höflichkeit, Vokabeln {current['vocab']}, 3 Korrektur-Sätze): {student_msgs}"}])
-            st.markdown(f"""
-                <div style="background: #ffffff; border-top: 5px solid #7c2d12; padding: 40px; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); margin-top: 30px;">
-                    <h3 style="color: #7c2d12; font-family: Crimson Pro; font-size: 2.2rem;">Academic Review Report</h3>
-                    <div style="font-size: 1.2rem; line-height: 1.7; color: #374151;">{feedback}</div>
-                </div>
-            """, unsafe_allow_html=True)
+        with st.spinner("Reviewing call logs..."):
+            feedback = get_completion([{"role": "user", "content": f"Analysiere diesen kaufmännischen Chat auf Deutsch (Stärken, Vokabeln {list(current['vocab'].keys())}, 3 Korrekturen): {student_msgs}"}])
+            st.markdown(f'<div style="background:white; border-top:4px solid #7c2d12; padding:30px; border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,0.1); margin-top:20px;"><h3 style="color:#7c2d12; font-family:Crimson Pro;">Review Report</h3><div style="font-size:1.1rem; line-height:1.6;">{feedback}</div></div>', unsafe_allow_html=True)
