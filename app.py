@@ -9,7 +9,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- STYLING ---
+# --- GLOBAL STYLING ---
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@700&family=Plus+Jakarta+Sans:wght@400;600&display=swap');
@@ -74,6 +74,35 @@ st.markdown("""
         font-weight: bold !important;
         width: 100%;
     }
+
+    /* Chat CSS (Moved to Global to avoid breaking Markdown) */
+    .chat-master-container {
+        background-color: #ffffff !important;
+        border: 2px solid #d1ccc1;
+        border-radius: 0 0 8px 8px;
+        height: 550px;
+        overflow-y: auto;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    .message-row { display: flex; gap: 12px; max-width: 90%; margin-bottom: 15px; }
+    .row-bot { align-self: flex-start; flex-direction: row; }
+    .row-user { align-self: flex-end; flex-direction: row-reverse; }
+
+    .avatar {
+        width: 40px; height: 40px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.2rem; flex-shrink: 0; border: 1px solid #d1ccc1;
+    }
+    .avatar-bot { background-color: #7c2d12; color: white; }
+    .avatar-user { background-color: #f1f5f9; color: #475569; }
+
+    .bubble { padding: 12px 18px; font-size: 1rem; line-height: 1.5; }
+    .bubble-bot { background-color: #fdf6e3; border-left: 4px solid #7c2d12; border-radius: 0 8px 8px 8px; color: #1a1a1a; }
+    .bubble-user { background-color: #f1f5f9; border-right: 4px solid #475569; border-radius: 8px 0 8px 8px; text-align: right; color: #1a1a1a; }
+    .meta { font-size: 0.7rem; font-weight: bold; color: #94a3b8; margin-bottom: 3px; text-transform: uppercase; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -92,63 +121,7 @@ def get_completion(messages):
 
 # --- CHAT RENDERER ---
 def render_chat_html(messages):
-    chat_html = """
-    <style>
-        .chat-master-container {
-            background-color: #ffffff !important;
-            border: 2px solid #d1ccc1;
-            border-radius: 8px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
-            height: 550px;
-            overflow-y: scroll;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        .message-row {
-            display: flex;
-            gap: 12px;
-            max-width: 90%;
-        }
-        .row-bot { align-self: flex-start; flex-direction: row; }
-        .row-user { align-self: flex-end; flex-direction: row-reverse; }
-
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            flex-shrink: 0;
-            border: 1px solid #d1ccc1;
-        }
-        .avatar-bot { background-color: #7c2d12; color: white; }
-        .avatar-user { background-color: #f1f5f9; color: #475569; }
-
-        .bubble {
-            padding: 12px 18px;
-            font-size: 1rem;
-            line-height: 1.5;
-            position: relative;
-        }
-        .bubble-bot {
-            background-color: #fdf6e3;
-            border-left: 4px solid #7c2d12;
-            border-radius: 0 8px 8px 8px;
-        }
-        .bubble-user {
-            background-color: #f1f5f9;
-            border-right: 4px solid #475569;
-            border-radius: 8px 0 8px 8px;
-            text-align: right;
-        }
-        .meta { font-size: 0.7rem; font-weight: bold; color: #94a3b8; margin-bottom: 3px; text-transform: uppercase; }
-    </style>
-    <div class="chat-master-container" id="chat-box">
-    """
+    inner_html = ""
     for msg in messages[1:]:
         is_bot = msg["role"] == "assistant"
         row_cls = "row-bot" if is_bot else "row-user"
@@ -157,7 +130,7 @@ def render_chat_html(messages):
         ava_icon = "💼" if is_bot else "🎓"
         lbl = "Partner" if is_bot else "You"
         
-        chat_html += f"""
+        inner_html += f"""
         <div class="message-row {row_cls}">
             <div class="avatar {ava_cls}">{ava_icon}</div>
             <div style="display: flex; flex-direction: column;">
@@ -166,8 +139,17 @@ def render_chat_html(messages):
             </div>
         </div>
         """
-    chat_html += '</div><script>var b=document.getElementById("chat-box");b.scrollTop=b.scrollHeight;</script>'
-    return chat_html
+    
+    full_html = f"""
+    <div class="chat-master-container" id="chat-box">
+        {inner_html}
+    </div>
+    <script>
+        var b = document.getElementById("chat-box");
+        if (b) {{ b.scrollTop = b.scrollHeight; }}
+    </script>
+    """
+    return full_html
 
 # --- SIDEBAR ---
 with st.sidebar:
@@ -204,10 +186,11 @@ with col_right:
         st.session_state.messages = [{"role": "system", "content": current['system_prompt']}, {"role": "assistant", "content": current['start_msg']}]
         st.session_state.last_scenario = selected_scenario_name
 
-    st.markdown('<div style="background:#ffffff; border:2px solid #d1ccc1; border-radius:8px; overflow:hidden;">', unsafe_allow_html=True)
-    st.markdown('<div style="background:#7c2d12; color:white; padding:8px 15px; font-size:0.8rem; font-weight:bold; letter-spacing:1px;">ACTIVE CONNECTION</div>', unsafe_allow_html=True)
+    # Outer Container with Label
+    st.markdown('<div style="background:#7c2d12; color:white; padding:8px 15px; font-size:0.8rem; font-weight:bold; letter-spacing:1px; border-radius: 8px 8px 0 0;">ACTIVE CONNECTION</div>', unsafe_allow_html=True)
+    
+    # Render Chat
     st.markdown(render_chat_html(st.session_state.messages), unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
     if prompt := st.chat_input("Speak now..."):
         st.session_state.messages.append({"role": "user", "content": prompt})
