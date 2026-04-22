@@ -126,7 +126,7 @@ def get_completion(messages):
                 "X-Title": "Business English Bot"
             },
             json={
-                "model": "meta-llama/llama-3.1-8b-instruct", 
+                "model": "openai/gpt-4o-mini", 
                 "messages": messages, 
                 "max_tokens": 800
             }
