@@ -47,6 +47,14 @@ st.markdown("""
         margin-bottom: 25px;
     }
 
+    .identity-card {
+        background: #f8fafc;
+        border-left: 4px solid #475569;
+        padding: 15px;
+        margin-bottom: 20px;
+        font-size: 0.95rem;
+    }
+
     .vocab-container {
         display: flex;
         flex-direction: column;
@@ -75,7 +83,7 @@ st.markdown("""
         width: 100%;
     }
 
-    /* Chat CSS */
+    /* Chat Styling */
     .chat-master-container {
         background-color: #ffffff !important;
         border: 2px solid #d1ccc1;
@@ -113,7 +121,7 @@ def get_completion(messages):
         res = requests.post(
             "https://openrouter.ai/api/v1/chat/completions",
             headers={"Authorization": f"Bearer {API_KEY}"},
-            json={"model": "meta-llama/llama-3-8b-instruct", "messages": messages, "max_tokens": 500}
+            json={"model": "meta-llama/llama-3-8b-instruct", "messages": messages, "max_tokens": 600}
         )
         return res.json()['choices'][0]['message']['content']
     except Exception as e:
@@ -129,12 +137,8 @@ def render_chat_html(messages):
         ava_cls = "avatar-bot" if is_bot else "avatar-user"
         ava_icon = "💼" if is_bot else "🎓"
         lbl = "Partner" if is_bot else "You"
-        
         inner_html += f'<div class="message-row {row_cls}"><div class="avatar {ava_cls}">{ava_icon}</div><div style="display: flex; flex-direction: column;"><div class="meta">{lbl}</div><div class="bubble {bub_cls}">{msg["content"]}</div></div></div>'
-    
-    # NO LEADING WHITESPACE HERE TO AVOID MARKDOWN CODE BLOCKS
-    full_html = f'<div class="chat-master-container" id="chat-box">{inner_html}</div><script>var b=document.getElementById("chat-box");if(b){{b.scrollTop=b.scrollHeight;}}</script>'
-    return full_html
+    return f'<div class="chat-master-container" id="chat-box">{inner_html}</div><script>var b=document.getElementById("chat-box");if(b){{b.scrollTop=b.scrollHeight;}}</script>'
 
 # --- SIDEBAR ---
 with st.sidebar:
@@ -152,6 +156,16 @@ st.markdown(f"<div class='app-header'><div class='sub-tag'>Business English Trai
 col_left, col_right = st.columns([1, 1.4], gap="large")
 
 with col_left:
+    # User Identity Card
+    st.markdown(f"""
+    <div class="identity-card">
+        <div class='sub-tag' style='font-size:0.7rem;'>Your Identity</div>
+        <b>Company:</b> {current['user_identity']['company']}<br>
+        <b>Your Role:</b> {current['user_identity']['role']}
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Assignment Card
     st.markdown(f"""
     <div class="assignment-container">
         <div class='sub-tag' style='margin-bottom:10px;'>Scenario Objectives</div>
@@ -172,7 +186,6 @@ with col_right:
         st.session_state.last_scenario = selected_scenario_name
 
     st.markdown('<div style="background:#7c2d12; color:white; padding:8px 15px; font-size:0.8rem; font-weight:bold; letter-spacing:1px; border-radius: 8px 8px 0 0;">ACTIVE CONNECTION</div>', unsafe_allow_html=True)
-    
     st.markdown(render_chat_html(st.session_state.messages), unsafe_allow_html=True)
 
     if prompt := st.chat_input("Speak now..."):
@@ -187,5 +200,20 @@ if st.button("📊 ANALYZE CALL", use_container_width=True):
     student_msgs = [m['content'] for m in st.session_state.messages if m['role'] == 'user']
     if student_msgs:
         with st.spinner("Reviewing call logs..."):
-            feedback = get_completion([{"role": "user", "content": f"Analysiere diesen kaufmännischen Chat auf Deutsch (Stärken, Vokabeln {list(current['vocab'].keys())}, 3 Korrekturen): {student_msgs}"}])
+            # Spezifisches Feedback zu den Checkpoints
+            analysis_prompt = f"""
+            Analysiere diesen kaufmännischen Chat auf Deutsch.
+            Schüler-Identität: {current['user_identity']}
+            Zwingend zu nennende Informationen (Checkpoints): {current['checkpoints']}
+            Vokabeln: {list(current['vocab'].keys())}
+
+            Bewerte:
+            1. Hat der Schüler seine Firma ({current['user_identity']['company']}) genannt?
+            2. Wurden ALLE Checkpoints ({current['checkpoints']}) im Gespräch erwähnt? Falls nicht, liste die fehlenden auf.
+            3. Höflichkeit & kaufmännische Etikette.
+            4. 3 konkrete Verbesserungsvorschläge für die englischen Sätze.
+
+            Chat-Verlauf: {student_msgs}
+            """
+            feedback = get_completion([{"role": "user", "content": analysis_prompt}])
             st.markdown(f'<div style="background:white; border-top:4px solid #7c2d12; padding:30px; border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,0.1); margin-top:20px;"><h3 style="color:#7c2d12; font-family:Crimson Pro;">Review Report</h3><div style="font-size:1.1rem; line-height:1.6;">{feedback}</div></div>', unsafe_allow_html=True)

@@ -2,13 +2,21 @@ SCENARIOS = {
     "MEDICA Trade Fair (Cornelsen)": {
         "agent_name": "Ms. Andrea Johnson",
         "company": "Med-Tech Solutions",
+        "user_identity": {
+            "company": "Westphalia Office GmbH",
+            "role": "Junior Sales Manager"
+        },
         "task": """
-Rufe Frau Johnson an und bedanke dich für das informative Gespräch am Messestand.
-Erinnere sie daran, dass sie dir ein Muster und eine aktuelle Preisliste versprochen hat.
-Frage nach einem Mengenrabatt für eine mögliche Großbestellung.
-Bleibe professionell und formell (B1/B2 Niveau).
+Du arbeitest als Junior Sales Manager bei der **Westphalia Office GmbH**.
+Dein Ziel ist es, den Kontakt zur Firma **Med-Tech Solutions** zu vertiefen.
+
+1. Stelle dich mit deinem Namen und deiner Firma (Westphalia Office GmbH) vor.
+2. Beziehe dich auf das Treffen mit Frau Johnson auf der **MEDICA in Dortmund**.
+3. Erinnere sie an das versprochene **Muster (Sample)** und die **Preisliste**.
+4. Frage nach einem **Mengenrabatt (Quantity Discount)** für eine Bestellung von **500 Einheiten**.
         """,
-        "system_prompt": "You are Ms. Andrea Johnson from Med-Tech Solutions. You remember the student from the MEDICA trade fair in Dortmund. You are professional and polite. You expect the student to use formal phrases like 'I am calling regarding...' or 'I was wondering if...'. If they are too informal, give a subtle hint. Maintain B1/B2 level.",
+        "checkpoints": ["Westphalia Office GmbH", "MEDICA in Dortmund", "Sample", "500 units"],
+        "system_prompt": "You are Ms. Andrea Johnson from Med-Tech Solutions. You are professional. You only give information if the student introduces themselves with their name and company (Westphalia Office GmbH). Maintain B1/B2 level.",
         "start_msg": "Med-Tech Solutions, Andrea Johnson speaking. How can I help you today?",
         "vocab": {
             "booth": "Messestand",
@@ -21,13 +29,21 @@ Bleibe professionell und formell (B1/B2 Niveau).
     "Lawnmower Inquiry (Klett)": {
         "agent_name": "Mr. Glasgow",
         "company": "Glasgow Mill Ltd.",
+        "user_identity": {
+            "company": "Garden & Parks Supplies",
+            "role": "Purchasing Assistant"
+        },
         "task": """
-Frage nach Herrn Glasgow.
-Beziehe dich auf die Messe in London.
-Erkundige dich, ob die Preise 'DDP' (frei Haus verzollt) sind, wie im Katalog angegeben.
-Frage nach einem Rabatt für Bestellungen über 50 Stück.
+Du arbeitest für **Garden & Parks Supplies** im Einkauf.
+Dein Chef möchte das Sortiment erweitern.
+
+1. Melde dich professionell und nenne deine Firma (**Garden & Parks Supplies**).
+2. Erwähne, dass ihr die Rasenmäher auf der **Messe in London** gesehen habt.
+3. Kläre die Lieferbedingung: Frage explizit, ob die Preise **DDP (frei Haus verzollt)** sind.
+4. Frage nach dem Rabatt für eine Testbestellung von **60 Stück**.
         """,
-        "system_prompt": "You are Mr. Glasgow from Glasgow Mill Ltd. in Scotland. You are friendly but very precise about business terms. You mention that prices are usually DDP Oxford for large orders. If the student asks about discounts, explain the 5% quantity discount for orders over 50 items. Maintain B1/B2 level.",
+        "checkpoints": ["Garden & Parks Supplies", "London Fair", "DDP", "60 pieces"],
+        "system_prompt": "You are Mr. Glasgow. You are helpful but expect clear business terms. Ensure the student mentions their company 'Garden & Parks Supplies'. If not, ask: 'I'm sorry, which company are you calling from?'",
         "start_msg": "Glasgow Mill, Mr. Glasgow speaking. What can I do for you?",
         "vocab": {
             "DDP (Delivered Duty Paid)": "frei Haus verzollt",
@@ -40,13 +56,21 @@ Frage nach einem Rabatt für Bestellungen über 50 Stück.
     "Late Delivery (Complaint)": {
         "agent_name": "Ms. Henderson",
         "company": "Westfield Logistics",
+        "user_identity": {
+            "company": "Office Design Inc.",
+            "role": "Logistics Coordinator"
+        },
         "task": """
-Rufe bei 'Westfield Logistics' an und verlange Ms. Henderson.
-Beschwere dich höflich aber bestimmt über die Verzögerung.
-Halte die Bestellnummer 'Order No. 455' bereit.
-Frage nach dem voraussichtlichen Liefertermin.
+Du bist Logistics Coordinator bei **Office Design Inc.**
+Eine dringende Lieferung ist nicht angekommen.
+
+1. Nenne deinen Namen und deine Firma (**Office Design Inc.**).
+2. Beschwere dich über die Verzögerung der **Bestellung Nr. 455 (Order No. 455)**.
+3. Erwähne, dass die Lieferung bereits seit **10 Tagen überfällig** ist.
+4. Setze eine Frist: Du erwartest den **Versand bis Freitag**.
         """,
-        "system_prompt": "You are Ms. Henderson, a formal and strict receptionist at Westfield Logistics. You expect polite business etiquette. If the student is too informal, point it out politely. Maintain B1/B2 level.",
+        "checkpoints": ["Office Design Inc.", "Order No. 455", "10 days overdue", "dispatch by Friday"],
+        "system_prompt": "You are Ms. Henderson. You are strict. You need the Order Number (455) to help. If the student is vague, insist on the order number.",
         "start_msg": "Westfield Logistics, Ms. Henderson. Who is calling, please?",
         "vocab": {
             "complaint": "Beschwerde",
