@@ -120,12 +120,26 @@ def get_completion(messages):
         API_KEY = st.secrets["OPENROUTER_API_KEY"]
         res = requests.post(
             "https://openrouter.ai/api/v1/chat/completions",
-            headers={"Authorization": f"Bearer {API_KEY}"},
-            json={"model": "google/gemini-flash-1.5", "messages": messages, "max_tokens": 600}
+            headers={
+                "Authorization": f"Bearer {API_KEY}",
+                "HTTP-Referer": "https://github.com/brandy299/business-english-bot", # Optional but good practice
+                "X-Title": "Business English Bot"
+            },
+            json={
+                "model": "google/gemini-flash-1.5", 
+                "messages": messages, 
+                "max_tokens": 800
+            }
         )
-        return res.json()['choices'][0]['message']['content']
+        data = res.json()
+        if 'choices' in data:
+            return data['choices'][0]['message']['content']
+        elif 'error' in data:
+            return f"API Error: {data['error'].get('message', 'Unknown error')}"
+        else:
+            return f"Unexpected Response: {str(data)}"
     except Exception as e:
-        return f"Error: {str(e)}"
+        return f"System Connection Error: {str(e)}"
 
 # --- CHAT RENDERER ---
 def render_chat_html(messages):
