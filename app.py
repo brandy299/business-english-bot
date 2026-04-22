@@ -94,10 +94,10 @@ st.markdown("""
     .avatar {
         width: 40px; height: 40px; border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
-        font-size: 1.2rem; flex-shrink: 0; border: 1px solid #d1ccc1;
+        font-size: 1.2rem; flex-shrink: 0; background-color: #ffffff !important;
     }
-    .avatar-bot { background-color: #7c2d12; color: white; }
-    .avatar-user { background-color: #f1f5f9; color: #475569; }
+    .avatar-bot { border: 2px solid #7c2d12 !important; }
+    .avatar-user { border: 2px solid #475569 !important; }
 
     .bubble { padding: 12px 18px; font-size: 1rem; line-height: 1.5; }
     .bubble-bot { background-color: #fdf6e3; border-left: 4px solid #7c2d12; border-radius: 0 8px 8px 8px; color: #1a1a1a; }
