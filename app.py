@@ -104,22 +104,42 @@ def render_chat_html(messages):
             padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 20px;
         }
+        .message-row {
+            display: flex;
+            gap: 12px;
+            max-width: 90%;
+        }
+        .row-bot { align-self: flex-start; flex-direction: row; }
+        .row-user { align-self: flex-end; flex-direction: row-reverse; }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            border: 1px solid #d1ccc1;
+        }
+        .avatar-bot { background-color: #7c2d12; color: white; }
+        .avatar-user { background-color: #f1f5f9; color: #475569; }
+
         .bubble {
-            max-width: 85%;
             padding: 12px 18px;
             font-size: 1rem;
             line-height: 1.5;
+            position: relative;
         }
         .bubble-bot {
-            align-self: flex-start;
             background-color: #fdf6e3;
             border-left: 4px solid #7c2d12;
             border-radius: 0 8px 8px 8px;
         }
         .bubble-user {
-            align-self: flex-end;
             background-color: #f1f5f9;
             border-right: 4px solid #475569;
             border-radius: 8px 0 8px 8px;
@@ -131,10 +151,21 @@ def render_chat_html(messages):
     """
     for msg in messages[1:]:
         is_bot = msg["role"] == "assistant"
-        align = "flex-start" if is_bot else "flex-end"
-        cls = "bubble-bot" if is_bot else "bubble-user"
+        row_cls = "row-bot" if is_bot else "row-user"
+        bub_cls = "bubble-bot" if is_bot else "bubble-user"
+        ava_cls = "avatar-bot" if is_bot else "avatar-user"
+        ava_icon = "💼" if is_bot else "🎓"
         lbl = "Partner" if is_bot else "You"
-        chat_html += f'<div style="display: flex; flex-direction: column; align-items: {align};"><div class="meta">{lbl}</div><div class="bubble {cls}">{msg["content"]}</div></div>'
+        
+        chat_html += f"""
+        <div class="message-row {row_cls}">
+            <div class="avatar {ava_cls}">{ava_icon}</div>
+            <div style="display: flex; flex-direction: column;">
+                <div class="meta">{lbl}</div>
+                <div class="bubble {bub_cls}">{msg['content']}</div>
+            </div>
+        </div>
+        """
     chat_html += '</div><script>var b=document.getElementById("chat-box");b.scrollTop=b.scrollHeight;</script>'
     return chat_html
 
