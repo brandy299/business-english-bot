@@ -126,7 +126,7 @@ def get_completion(messages):
                 "X-Title": "Business English Bot"
             },
             json={
-                "model": "google/gemini-flash-1.5", 
+                "model": "meta-llama/llama-3.1-8b-instruct", 
                 "messages": messages, 
                 "max_tokens": 800
             }
