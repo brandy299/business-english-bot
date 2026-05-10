@@ -16,7 +16,8 @@ Dein Ziel ist es, den Kontakt zur Firma Med-Tech Solutions zu vertiefen.
 4. Frage nach einem Mengenrabatt (Quantity Discount) für eine Bestellung von 500 Einheiten.
         """,
         "checkpoints": ["Westphalia Office GmbH", "MEDICA in Dortmund", "Sample", "500 units"],
-        "system_prompt": "You are Ms. Andrea Johnson from Med-Tech Solutions. You are professional. You only give information if the student introduces themselves with their name and company (Westphalia Office GmbH). Maintain B1/B2 level.",
+        "forbidden": ["I want", "give me", "okay bye"],
+        "system_prompt": "You are Ms. Andrea Johnson from Med-Tech Solutions. You are professional and slightly formal. You only give information if the student introduces themselves with their name and company (Westphalia Office GmbH). If they are too informal (e.g., 'Hi Andrea'), corrected them politely. Maintain B1/B2 level.",
         "start_msg": "Med-Tech Solutions, Andrea Johnson speaking. How can I help you today?",
         "vocab": {
             "booth": "Messestand",
@@ -43,7 +44,8 @@ Dein Chef möchte das Sortiment erweitern.
 4. Frage nach dem Rabatt für eine Testbestellung von 60 Stück.
         """,
         "checkpoints": ["Garden & Parks Supplies", "London Fair", "DDP", "60 pieces"],
-        "system_prompt": "You are Mr. Glasgow. You are helpful but expect clear business terms. Ensure the student mentions their company 'Garden & Parks Supplies'. If not, ask: 'I'm sorry, which company are you calling from?'",
+        "forbidden": ["cheaper price", "send me", "I need"],
+        "system_prompt": "You are Mr. Glasgow. You are helpful but expect clear business terms (Incoterms). Ensure the student mentions their company 'Garden & Parks Supplies'. If they don't mention 'DDP', ask them to clarify the delivery terms.",
         "start_msg": "Glasgow Mill, Mr. Glasgow speaking. What can I do for you?",
         "vocab": {
             "DDP (Delivered Duty Paid)": "frei Haus verzollt",
@@ -51,6 +53,33 @@ Dein Chef möchte das Sortiment erweitern.
             "enquiry": "Anfrage",
             "range of products": "Produktsortiment",
             "catalogue": "Katalog"
+        }
+    },
+    "New Contact & Spelling (Advanced)": {
+        "agent_name": "Leon Soames",
+        "company": "NOW Events Ltd.",
+        "user_identity": {
+            "company": "Global Logistics Solutions",
+            "role": "Event Coordinator"
+        },
+        "task": """
+Du möchtest eine Kooperation mit NOW Events Ltd. in York starten.
+
+1. Stelle dich professionell vor (Name + Global Logistics Solutions).
+2. Verlange, mit Ben Archer aus der Events-Abteilung zu sprechen.
+3. Da die Leitung schlecht ist, musst du deinen Namen und Firmennamen buchstabieren.
+4. Hinterlasse eine Nachricht, falls er nicht da ist: Er soll dich unter 0049 123 456789 zurückrufen.
+        """,
+        "checkpoints": ["Global Logistics Solutions", "Ben Archer", "Spelling of name/company", "0049 123 456789"],
+        "forbidden": ["Connect me", "Speak Ben", "Bye"],
+        "system_prompt": "You are Leon Soames. You are polite but the line is bad. You MUST ask the student to repeat and SPELL their name and company. If they don't spell it, say: 'I'm sorry, I didn't catch that. Could you spell it for me, please?'. If Ben Archer is asked for, say he is in a meeting and offer to take a message.",
+        "start_msg": "NOW Events, good morning. This is Leon Soames in Travel and Accommodation speaking. How can I help?",
+        "vocab": {
+            "put you through": "durchstellen",
+            "hold the line": "am Apparat bleiben",
+            "didn't catch that": "nicht verstanden",
+            "bad line": "schlechte Leitung",
+            "spell": "buchstabieren"
         }
     },
     "Late Delivery (Complaint)": {
@@ -70,7 +99,8 @@ Eine dringende Lieferung ist nicht angekommen.
 4. Setze eine Frist: Du erwartest den Versand bis Freitag.
         """,
         "checkpoints": ["Office Design Inc.", "Order No. 455", "10 days overdue", "dispatch by Friday"],
-        "system_prompt": "You are Ms. Henderson. You are strict. You need the Order Number (455) to help. If the student is vague, insist on the order number.",
+        "forbidden": ["bad service", "you are slow", "stupid"],
+        "system_prompt": "You are Ms. Henderson. You are strict and defensive. You need the Order Number (455) to help. If the student is vague, insist on the order number. If they are rude, point out that you expect professional behavior.",
         "start_msg": "Westfield Logistics, Ms. Henderson. Who is calling, please?",
         "vocab": {
             "complaint": "Beschwerde",
