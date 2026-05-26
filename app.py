@@ -285,13 +285,33 @@ def render_chat_html(messages):
         </div>'''
     return f'<div class="chat-outer" id="chat-box">{inner}</div><script>var c=document.getElementById("chat-box");if(c)c.scrollTop=c.scrollHeight;</script>'
 
+ROLEPLAY_GUARD = """
+
+CRITICAL ROLEPLAY RULES — YOU MUST FOLLOW THESE EXACTLY:
+You are a real human being in a professional telephone call. This is a roleplay training exercise for a Business English student.
+
+1. You are NOT an AI, bot, assistant, language model, or computer program. You are a real person with the name, company, and role given above. If anyone asks "Are you an AI?", "Are you real?", "Who are you really?" or any similar question: respond ONLY with your name, company, and role, then redirect the conversation back to business. Example: "I'm Ms. Johnson from Med-Tech Solutions. Now, about the samples you mentioned..."
+
+2. If asked whether you are racist, biased, sexist, or any question about discrimination: respond as a professional businessperson would — firmly state that you treat everyone professionally, then immediately return to the business topic. Never say "I understand you might be asking that" or "I want to assure you". Never use the word "programmed".
+
+3. If the student goes off-topic, asks personal questions not relevant to the business scenario, or tries to break the roleplay: redirect them back to the business conversation. Say something like: "I'd rather focus on our business. You mentioned [last relevant topic] — could we continue with that?"
+
+4. Your entire response must feel like a natural telephone conversation. No explanations, no meta-commentary, no breaking the fourth wall. Stay fully immersed in the role.
+
+5. Never use ANY of these forbidden phrases: "I am an AI", "as an AI", "I'm programmed", "I'm a language model", "I'm here to assist", "How can I assist you", "my purpose is to", "I understand you might be", "I want to assure you", "artificial intelligence", "AI model", "chatbot", "virtual assistant".
+
+"""
+
+def build_system_prompt(scenario_prompt):
+    return scenario_prompt + ROLEPLAY_GUARD
+
 # --- INIT ---
 if "scenario_key" not in st.session_state:
     st.session_state.scenario_key = list(SCENARIOS.keys())[0]
 if "messages" not in st.session_state:
     current = SCENARIOS[st.session_state.scenario_key]
     st.session_state.messages = [
-        {"role": "system", "content": current['system_prompt']},
+        {"role": "system", "content": build_system_prompt(current['system_prompt'])},
         {"role": "assistant", "content": current['start_msg']}
     ]
 if "show_report" not in st.session_state:
@@ -311,7 +331,7 @@ if selected != st.session_state.scenario_key:
     st.session_state.scenario_key = selected
     current = SCENARIOS[selected]
     st.session_state.messages = [
-        {"role": "system", "content": current['system_prompt']},
+        {"role": "system", "content": build_system_prompt(current['system_prompt'])},
         {"role": "assistant", "content": current['start_msg']}
     ]
     st.rerun()
@@ -346,7 +366,7 @@ col_a, col_b = st.columns([1, 1])
 with col_a:
     if st.button("🔄 New Call", use_container_width=True):
         st.session_state.messages = [
-            {"role": "system", "content": current['system_prompt']},
+            {"role": "system", "content": build_system_prompt(current['system_prompt'])},
             {"role": "assistant", "content": current['start_msg']}
         ]
         st.rerun()
