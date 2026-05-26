@@ -89,8 +89,9 @@ st.markdown("""
         border: 1.5px solid var(--sand-dark);
         border-top: none;
         border-radius: 0 0 6px 6px;
-        height: clamp(350px, 55dvh, 600px);
+        height: clamp(350px, 50dvh, 600px);
         overflow-y: auto;
+        overflow-x: hidden;
         padding: clamp(12px, 2vw, 20px);
         display: flex;
         flex-direction: column;
@@ -101,6 +102,11 @@ st.markdown("""
         display: flex;
         gap: 10px;
         max-width: 90%;
+        min-width: 0;
+    }
+    .message-row > div:last-child {
+        min-width: 0;
+        flex: 1;
     }
     .row-bot { align-self: flex-start; flex-direction: row; }
     .row-user { align-self: flex-end; flex-direction: row-reverse; }
@@ -123,6 +129,9 @@ st.markdown("""
         padding: 10px 14px;
         font-size: clamp(0.85rem, 2vw, 0.95rem);
         line-height: 1.55;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+        min-width: 0;
     }
     .bubble-bot {
         background: var(--cream);
@@ -136,6 +145,9 @@ st.markdown("""
         border-radius: 10px 0 10px 10px;
         color: var(--text);
     }
+    .bubble p, .bubble ul, .bubble ol { margin: 4px 0; }
+    .bubble p:first-child { margin-top: 0; }
+    .bubble p:last-child { margin-bottom: 0; }
     .meta {
         font-size: clamp(0.6rem, 1.5vw, 0.7rem);
         font-weight: 600;
@@ -192,8 +204,8 @@ st.markdown("""
         font-size: clamp(0.72rem, 1.7vw, 0.82rem);
         gap: 8px;
     }
-    .v-chip .en { font-weight: 600; color: var(--brown); white-space: nowrap; }
-    .v-chip .de { color: var(--slate); font-style: italic; font-size: 0.85em; white-space: nowrap; }
+    .v-chip .en { font-weight: 600; color: var(--brown); }
+    .v-chip .de { color: var(--slate); font-style: italic; font-size: 0.85em; }
 
     /* --- BUTTONS --- */
     .stButton > button {
@@ -263,7 +275,16 @@ def get_completion(messages):
         )
         data = res.json()
         if 'choices' in data:
-            return data['choices'][0]['message']['content']
+            response_text = data['choices'][0]['message']['content']
+            if any(phrase in response_text.lower() for phrase in [
+                'cannot read', 'does not support image', 'image.png',
+                'this model does not support', 'inform the user',
+                'no endpoints found', 'i am an ai', 'as an ai',
+                'i\'m programmed', 'language model', 'chatbot',
+                'virtual assistant', 'how can i assist you'
+            ]):
+                return "I'm sorry, could you repeat that? The line was a bit unclear."
+            return response_text
         elif 'error' in data:
             return f"API Error: {data['error'].get('message', 'Unknown error')}"
         else:
@@ -298,7 +319,9 @@ You are a real human being in a professional telephone call. This is a roleplay 
 
 4. Your entire response must feel like a natural telephone conversation. No explanations, no meta-commentary, no breaking the fourth wall. Stay fully immersed in the role.
 
-5. Never use ANY of these forbidden phrases: "I am an AI", "as an AI", "I'm programmed", "I'm a language model", "I'm here to assist", "How can I assist you", "my purpose is to", "I understand you might be", "I want to assure you", "artificial intelligence", "AI model", "chatbot", "virtual assistant".
+5. NEVER generate error messages or system warnings. NEVER say you cannot read an image, file, or any media. Images do not exist in a phone call — this is a voice conversation. Never mention "image", "file", "upload", "attachment", "cannot read", or "does not support".
+
+6. Never use ANY of these forbidden phrases: "I am an AI", "as an AI", "I'm programmed", "I'm a language model", "I'm here to assist", "How can I assist you", "my purpose is to", "I understand you might be", "I want to assure you", "artificial intelligence", "AI model", "chatbot", "virtual assistant", "Inform the user", "this model does not support", "cannot read".
 
 """
 
