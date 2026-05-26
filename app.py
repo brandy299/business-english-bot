@@ -206,9 +206,21 @@ st.markdown("""
         border: 1px solid #f0dcd0;
         font-size: clamp(0.72rem, 1.7vw, 0.82rem);
         gap: 8px;
+        min-width: 0;
     }
-    .v-chip .en { font-weight: 600; color: var(--brown); }
-    .v-chip .de { color: var(--slate); font-style: italic; font-size: 0.85em; }
+    .v-chip .en {
+        font-weight: 600;
+        color: var(--brown);
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .v-chip .de {
+        color: var(--slate);
+        font-style: italic;
+        font-size: 0.85em;
+        flex-shrink: 0;
+    }
 
     /* --- BUTTONS --- */
     .stButton > button {
