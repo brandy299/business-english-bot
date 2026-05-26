@@ -191,35 +191,26 @@ st.markdown("""
     }
 
     /* --- VOCAB --- */
-    .vocab-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-        gap: 6px;
+    .vocab-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: clamp(0.78rem, 1.7vw, 0.88rem);
     }
-    .v-chip {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: var(--cream);
-        padding: 6px 10px;
-        border-radius: 4px;
-        border: 1px solid #f0dcd0;
-        font-size: clamp(0.72rem, 1.7vw, 0.82rem);
-        gap: 8px;
-        min-width: 0;
+    .vocab-table td {
+        padding: 7px 12px;
+        border-bottom: 1px solid #e8e0d4;
+        vertical-align: top;
     }
-    .v-chip .en {
+    .vocab-table tr:last-child td { border-bottom: none; }
+    .vocab-table .en {
         font-weight: 600;
         color: var(--brown);
-        min-width: 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        width: 55%;
     }
-    .v-chip .de {
+    .vocab-table .de {
         color: var(--slate);
         font-style: italic;
-        font-size: 0.85em;
-        flex-shrink: 0;
+        width: 45%;
     }
 
     /* --- BUTTONS --- */
@@ -360,10 +351,25 @@ You are a real human being in a professional telephone call. This is a roleplay 
 def build_system_prompt(scenario_prompt):
     return scenario_prompt + ROLEPLAY_GUARD
 
+def clean_messages(messages):
+    """Remove hallucinated error messages from existing message history."""
+    cleaned = []
+    for msg in messages:
+        content = str(msg.get("content", ""))
+        if HAZARD_PATTERN.search(content) or 'ERROR' in content or 'Error:' in content:
+            continue
+        cleaned.append(msg)
+    return cleaned
+
 # --- INIT ---
 if "scenario_key" not in st.session_state:
     st.session_state.scenario_key = list(SCENARIOS.keys())[0]
-if "messages" not in st.session_state:
+
+# Clean existing messages from old sessions that might contain hallucinated errors
+if "messages" in st.session_state:
+    st.session_state.messages = clean_messages(st.session_state.messages)
+
+if "messages" not in st.session_state or not st.session_state.messages:
     current = SCENARIOS[st.session_state.scenario_key]
     st.session_state.messages = [
         {"role": "system", "content": build_system_prompt(current['system_prompt'])},
@@ -410,10 +416,11 @@ with st.expander("📋 Your Mission & Identity", expanded=True):
 
     st.markdown("**Required checkpoints:** " + " · ".join([f"`{c}`" for c in current['checkpoints']]))
 
-    vocab_html = '<div class="vocab-grid">'
+    vocab_html = '<table class="vocab-table">'
     for eng, ger in current['vocab'].items():
-        vocab_html += f'<div class="v-chip"><span class="en">{eng}</span><span class="de">{ger}</span></div>'
-    vocab_html += '</div>'
+        vocab_html += f'<tr><td class="en">{eng}</td><td class="de">{ger}</td></tr>'
+    vocab_html += '</table>'
+    st.markdown("**Vocabulary**", help="Key terms for this scenario")
     st.markdown(vocab_html, unsafe_allow_html=True)
 
 # --- ACTIONS ROW ---
