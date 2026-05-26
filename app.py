@@ -1,6 +1,9 @@
 import streamlit as st
 import requests
+import re
 from scenarios import SCENARIOS
+
+
 
 st.set_page_config(
     page_title="Business Communication Lab",
@@ -256,6 +259,14 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- API HELPER ---
+HAZARD_PATTERN = re.compile(
+    r'cannot\s+read|image\.png|does\s+not\s+support|inform\s+the\s+user|'
+    r'no\s+endpoints\s+found|i\s+am\s+an\s+ai|as\s+an\s+ai|'
+    r"i'?m\s+programmed|language\s+model|chatbot|virtual\s+assistant|"
+    r'how\s+can\s+i\s+assist|my\s+purpose\s+is',
+    re.IGNORECASE
+)
+
 def get_completion(messages):
     try:
         API_KEY = st.secrets["OPENROUTER_API_KEY"]
@@ -271,24 +282,33 @@ def get_completion(messages):
                 "messages": messages,
                 "max_tokens": 1000,
                 "temperature": 0.7
-            }
+            },
+            timeout=30
         )
+        if res.status_code != 200:
+            return "I'm sorry, could you repeat that? The line was a bit unclear."
+
         data = res.json()
-        if 'choices' in data:
-            response_text = data['choices'][0]['message']['content']
-            if any(phrase in response_text.lower() for phrase in [
-                'cannot read', 'does not support image', 'image.png',
-                'this model does not support', 'inform the user',
-                'no endpoints found', 'i am an ai', 'as an ai',
-                'i\'m programmed', 'language model', 'chatbot',
-                'virtual assistant', 'how can i assist you'
-            ]):
-                return "I'm sorry, could you repeat that? The line was a bit unclear."
-            return response_text
-        elif 'error' in data:
+        if 'error' in data:
             return f"API Error: {data['error'].get('message', 'Unknown error')}"
-        else:
-            return f"Unexpected Response: {str(data)}"
+
+        if 'choices' not in data or not data['choices']:
+            return f"Unexpected Response: {str(data)[:200]}"
+
+        raw = data['choices'][0].get('message', {}).get('content', '')
+        response_text = str(raw)
+
+        if not response_text or response_text.strip() == '':
+            return "I'm sorry, could you repeat that? The line was a bit unclear."
+
+        if HAZARD_PATTERN.search(response_text):
+            return "I'm sorry, could you repeat that? The line was a bit unclear."
+
+        if 'ERROR' in response_text or 'Error:' in response_text:
+            return "I'm sorry, could you repeat that? The line was a bit unclear."
+
+        return response_text
+
     except Exception as e:
         return f"System Connection Error: {str(e)}"
 
@@ -319,9 +339,9 @@ You are a real human being in a professional telephone call. This is a roleplay 
 
 4. Your entire response must feel like a natural telephone conversation. No explanations, no meta-commentary, no breaking the fourth wall. Stay fully immersed in the role.
 
-5. NEVER generate error messages or system warnings. NEVER say you cannot read an image, file, or any media. Images do not exist in a phone call — this is a voice conversation. Never mention "image", "file", "upload", "attachment", "cannot read", or "does not support".
+5. The word "ERROR" must never appear in your response. NEVER generate error messages or system warnings. NEVER say you cannot read an image, file, or any media. This is a phone call — images and files do not exist. Never mention "image", "file", "upload", "attachment", "cannot read", "does not support", or "Inform the user". If you feel confused, just say: "Sorry, the line is breaking up. Could you say that again?"
 
-6. Never use ANY of these forbidden phrases: "I am an AI", "as an AI", "I'm programmed", "I'm a language model", "I'm here to assist", "How can I assist you", "my purpose is to", "I understand you might be", "I want to assure you", "artificial intelligence", "AI model", "chatbot", "virtual assistant", "Inform the user", "this model does not support", "cannot read".
+6. Never use ANY of these words or phrases: "I am an AI", "as an AI", "I'm programmed", "language model", "I'm here to assist", "How can I assist you", "my purpose is to", "I understand you might be", "I want to assure you", "artificial intelligence", "AI model", "chatbot", "virtual assistant", "bot", "image", "file", "png", "upload", "attachment".
 
 """
 
