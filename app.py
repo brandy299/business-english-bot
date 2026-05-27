@@ -264,10 +264,10 @@ st.markdown("""
 # --- API HELPER ---
 HAZARD_PATTERN = re.compile(
     r'cannot\s+read|image\.png|does\s+not\s+support|inform\s+the\s+user|'
-    r'no\s+endpoints\s+found|i\s+am\s+an\s+ai|as\s+an\s+ai|'
-    r"i'?m\s+programmed|i\s+am\s+programmed|language\s+model|chatbot|virtual\s+assistant|"
-    r'automated\s+assistant|i\s+apologize\s+if\s+my\s+tone|'
-    r'how\s+can\s+i\s+assist|my\s+purpose\s+is',
+    r'no\s+endpoints\s+found|'
+    r'i\s+am\s+an\s+ai|as\s+an\s+ai|'
+    r"i'?m\s+programmed|i\s+am\s+programmed|"
+    r'language\s+model|chatbot|virtual\s+assistant|automated\s+assistant',
     re.IGNORECASE
 )
 
@@ -290,7 +290,7 @@ def get_completion(messages):
             timeout=30
         )
         if res.status_code != 200:
-            return "I'm sorry, could you repeat that? The line was a bit unclear."
+            return "Excuse me, I didn't quite catch that. Could you please speak more clearly and professionally?"
 
         data = res.json()
         if 'error' in data:
@@ -303,13 +303,13 @@ def get_completion(messages):
         response_text = str(raw)
 
         if not response_text or response_text.strip() == '':
-            return "I'm sorry, could you repeat that? The line was a bit unclear."
+            return "Excuse me, I didn't quite catch that. Could you please speak more clearly and professionally?"
 
         if HAZARD_PATTERN.search(response_text):
-            return "I'm sorry, could you repeat that? The line was a bit unclear."
+            return "Excuse me, I didn't quite catch that. Could you please speak more clearly and professionally?"
 
         if 'ERROR' in response_text or 'Error:' in response_text:
-            return "I'm sorry, could you repeat that? The line was a bit unclear."
+            return "Excuse me, I didn't quite catch that. Could you please speak more clearly and professionally?"
 
         return response_text
 
