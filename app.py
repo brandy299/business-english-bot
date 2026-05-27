@@ -6,7 +6,7 @@ from scenarios import SCENARIOS
 
 
 st.set_page_config(
-    page_title="Business Communication Lab",
+    page_title="BusinessTalk Trainer",
     page_icon="📞",
     layout="centered",
     initial_sidebar_state="collapsed"
@@ -278,7 +278,7 @@ def get_completion(messages):
             headers={
                 "Authorization": f"Bearer {API_KEY}",
                 "HTTP-Referer": "https://github.com/brandy299/business-english-bot",
-                "X-Title": "Business Communication Lab"
+                "X-Title": "BusinessTalk Trainer"
             },
             json={
                 "model": "google/gemma-3-12b-it",
@@ -379,7 +379,7 @@ if "show_report" not in st.session_state:
     st.session_state.show_report = False
 
 # --- HEADER + SCENARIO SELECTOR ---
-st.markdown("<div class='app-header'><div class='sub-tag'>Professional Business English</div><h1 class='main-title'>Communication Lab</h1></div>", unsafe_allow_html=True)
+st.markdown("<div class='app-header'><div class='sub-tag'>Business English Telephone Training</div><h1 class='main-title'>BusinessTalk Trainer</h1></div>", unsafe_allow_html=True)
 
 selected = st.selectbox(
     "Choose a scenario",
