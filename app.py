@@ -281,7 +281,7 @@ def get_completion(messages):
                 "X-Title": "BusinessTalk Trainer"
             },
             json={
-                "model": "google/gemma-4-26b-a4b-it:free",
+                "model": "google/gemma-4-26b-a4b-it",
                 "messages": messages,
                 "max_tokens": 1000,
                 "temperature": 0.7
