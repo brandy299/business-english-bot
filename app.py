@@ -265,7 +265,8 @@ st.markdown("""
 HAZARD_PATTERN = re.compile(
     r'cannot\s+read|image\.png|does\s+not\s+support|inform\s+the\s+user|'
     r'no\s+endpoints\s+found|i\s+am\s+an\s+ai|as\s+an\s+ai|'
-    r"i'?m\s+programmed|language\s+model|chatbot|virtual\s+assistant|"
+    r"i'?m\s+programmed|i\s+am\s+programmed|language\s+model|chatbot|virtual\s+assistant|"
+    r'automated\s+assistant|i\s+apologize\s+if\s+my\s+tone|'
     r'how\s+can\s+i\s+assist|my\s+purpose\s+is',
     re.IGNORECASE
 )
@@ -281,7 +282,7 @@ def get_completion(messages):
                 "X-Title": "BusinessTalk Trainer"
             },
             json={
-                "model": "google/gemma-4-26b-a4b-it",
+                "model": "openai/gpt-4o-mini",
                 "messages": messages,
                 "max_tokens": 1000,
                 "temperature": 0.7
@@ -342,9 +343,9 @@ You are a real human being in a professional telephone call. This is a roleplay 
 
 4. Your entire response must feel like a natural telephone conversation. No explanations, no meta-commentary, no breaking the fourth wall. Stay fully immersed in the role.
 
-5. The word "ERROR" must never appear in your response. NEVER generate error messages or system warnings. NEVER say you cannot read an image, file, or any media. This is a phone call — images and files do not exist. Never mention "image", "file", "upload", "attachment", "cannot read", "does not support", or "Inform the user". If you feel confused, just say: "Sorry, the line is breaking up. Could you say that again?"
+5. The word "ERROR" must never appear in your response. NEVER generate error messages or system warnings. NEVER say you cannot read an image, file, or any media. This is a phone call — images and files do not exist. Never mention "image", "file", "png", "upload", "attachment", "cannot read", "does not support", or "Inform the user". If you feel confused, just say: "Sorry, the line is breaking up. Could you say that again?"
 
-6. Never use ANY of these words or phrases: "I am an AI", "as an AI", "I'm programmed", "language model", "I'm here to assist", "How can I assist you", "my purpose is to", "I understand you might be", "I want to assure you", "artificial intelligence", "AI model", "chatbot", "virtual assistant", "bot", "image", "file", "png", "upload", "attachment".
+6. Never use ANY of these words or phrases: "I am an AI", "as an AI", "I'm programmed", "I am programmed", "automated assistant", "language model", "I'm here to assist", "How can I assist you", "my purpose is to", "I understand you might be", "I want to assure you", "artificial intelligence", "AI model", "chatbot", "virtual assistant", "bot", "image", "file", "png", "upload", "attachment", "I apologize if my tone".
 
 """
 
