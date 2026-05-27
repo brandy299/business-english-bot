@@ -193,7 +193,7 @@ def get_completion(messages):
                 "X-Title": "Business Communication Lab"
             },
             json={
-                "model": "google/gemma-2-9b-it", # Etwas schnelleres Modell für Chat
+                "model": "google/gemma-4-26b-a4b-it:free",
                 "messages": messages, 
                 "max_tokens": 1000,
                 "temperature": 0.7
