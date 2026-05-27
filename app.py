@@ -271,6 +271,39 @@ HAZARD_PATTERN = re.compile(
     re.IGNORECASE
 )
 
+# --- INPUT PROFESSIONALISM FILTER ---
+RUDE_PATTERN = re.compile(
+    r'\b(bitch|damn|shit|fuck|asshole|stupid|idiot|moron|hell\s+(you|no)|'
+    r'wtf|lmfao|shut\s+up|screw\s+you|piss\s+off)\b',
+    re.IGNORECASE
+)
+
+SLANG_PATTERN = re.compile(
+    r'\b(wazup|whazzup|sup\b|yo\b|yeah\b|nah\b|gimme|gonna|wanna|kinda|'
+    r'dunno|lemme|gotta|outta|u\s+r\b|ur\b|lol\b|lmao|omg|rofl|'
+    r'btw|imo|imho|fyi|asap|thx|pls|plz|cya|brb)\b',
+    re.IGNORECASE
+)
+
+def check_input_professionalism(user_input: str) -> str | None:
+    """
+    Check if student input uses rude or slang language.
+    Returns a coaching response if unprofessional, None if OK.
+    """
+    if RUDE_PATTERN.search(user_input):
+        return (
+            "Excuse me, but that language is completely inappropriate for a professional business call. "
+            "In a business context, we communicate respectfully and professionally. "
+            "Could you please rephrase your message in proper, polite Business English?"
+        )
+    if SLANG_PATTERN.search(user_input):
+        return (
+            "I beg your pardon? In a professional business telephone call, we use standard, formal English. "
+            "Could you please rephrase that in a more professional manner? "
+            "For example, instead of informal greetings, you might say: 'Good morning, this is [Name] from [Company].'"
+        )
+    return None
+
 def get_completion(messages):
     try:
         API_KEY = st.secrets["OPENROUTER_API_KEY"]
@@ -448,9 +481,15 @@ st.markdown(render_chat_html(st.session_state.messages), unsafe_allow_html=True)
 
 if prompt := st.chat_input("Type your response…"):
     st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.spinner(""):
-        response = get_completion(st.session_state.messages)
-        st.session_state.messages.append({"role": "assistant", "content": response})
+
+    # Check professionalism first — if rude/slang, coach immediately without API call
+    coaching_response = check_input_professionalism(prompt)
+    if coaching_response:
+        st.session_state.messages.append({"role": "assistant", "content": coaching_response})
+    else:
+        with st.spinner(""):
+            response = get_completion(st.session_state.messages)
+            st.session_state.messages.append({"role": "assistant", "content": response})
     st.rerun()
 
 # --- REPORT ---
